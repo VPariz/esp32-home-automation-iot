@@ -1,0 +1,27 @@
+# Compiled C binaries
+*.exe
+*.out
+*.o
+*.obj
+
+# Transfer output
+arquivo_recebido.txt
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.listing
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Segredos e Configurações
+.env
+.env.*
+
+# OS / IDE files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

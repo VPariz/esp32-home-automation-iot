@@ -1,0 +1,3 @@
+Exemplo de payload para teste de transferência de arquivos via Sockets TCP.
+Sistemas Distribuídos & Redes de Computadores - C Sockets (Winsock2 / POSIX).
+Transferência em blocos de 1024 bytes com validação de encerramento por recv().

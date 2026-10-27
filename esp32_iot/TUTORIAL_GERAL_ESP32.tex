@@ -1,0 +1,501 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\geometry{top=2.4cm, bottom=2.2cm, left=2.2cm, right=2.2cm, headheight=15pt}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+% Cores Institucionais e Temáticas
+\definecolor{primary}{rgb}{0.08, 0.28, 0.52}
+\definecolor{secondary}{rgb}{0.12, 0.45, 0.70}
+\definecolor{darkslate}{rgb}{0.15, 0.20, 0.28}
+\definecolor{boxbg}{rgb}{0.96, 0.98, 1.0}
+\definecolor{boxborder}{rgb}{0.72, 0.82, 0.94}
+\definecolor{warnbg}{rgb}{1.0, 0.97, 0.92}
+\definecolor{warnborder}{rgb}{0.95, 0.65, 0.25}
+\definecolor{codebg}{rgb}{0.12, 0.13, 0.16}
+\definecolor{codefg}{rgb}{0.92, 0.94, 0.96}
+\definecolor{commentgreen}{rgb}{0.38, 0.75, 0.38}
+\definecolor{keywordblue}{rgb}{0.38, 0.68, 1.0}
+\definecolor{stringorange}{rgb}{1.0, 0.65, 0.35}
+
+% Configuração de Cabeçalho e Rodapé
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textcolor{secondary}{\textbf{Redes de Computadores I - IME}}}
+\lhead{\textcolor{secondary}{Tutorial Prático: ESP32 \& Automação Residencial}}
+\rfoot{\thepage}
+\lfoot{\footnotesize Grupo: Laboratório de Engenharia Eletrônica (IME)}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Configuração de Links com quebra automática
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    filecolor=secondary,
+    urlcolor=primary,
+    citecolor=primary,
+    breaklinks=true
+}
+
+% Configuração do Listings para C++ / Arduino
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize\color{codefg},
+    keywordstyle=\color{keywordblue}\bfseries,
+    commentstyle=\color{commentgreen}\itshape,
+    stringstyle=\color{stringorange},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    tabsize=2,
+    breaklines=true,
+    breakatwhitespace=false,
+    showspaces=false,
+    showstringspaces=false,
+    frame=single,
+    rulecolor=\color{darkslate},
+    captionpos=b,
+    inputencoding=utf8,
+    extendedchars=true,
+    literate={á}{{\'a}}1 {à}{{\`a}}1 {ã}{{\~a}}1 {é}{{\'e}}1 {ê}{{\^e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {õ}{{\~o}}1 {ú}{{\'u}}1 {ç}{{\c{c}}}1 {Á}{{\'A}}1 {À}{{\`A}}1 {Ã}{{\~A}}1 {É}{{\'E}}1 {Ê}{{\^E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Õ}{{\~O}}1 {Ú}{{\'U}}1 {Ç}{{\c{C}}}1
+}
+
+% Caixas de Destaque
+\newtcolorbox{infobox}[1]{
+    colback=boxbg,
+    colframe=boxborder,
+    fonttitle=\bfseries\color{primary},
+    title=#1,
+    arc=3mm,
+    boxrule=1pt,
+    left=3mm, right=3mm, top=2mm, bottom=2mm
+}
+
+\newtcolorbox{warnbox}[1]{
+    colback=warnbg,
+    colframe=warnborder,
+    fonttitle=\bfseries\color{orange!70!black},
+    title=#1,
+    arc=3mm,
+    boxrule=1.2pt,
+    left=3mm, right=3mm, top=2mm, bottom=2mm
+}
+
+\newtcblisting{circuitbox}[1]{
+    colback=codebg,
+    colframe=darkslate,
+    fonttitle=\bfseries\color{green!80!white},
+    title=#1,
+    arc=2mm,
+    boxrule=1pt,
+    listing only,
+    listing options={basicstyle=\ttfamily\scriptsize\color{codefg},numbers=none,frame=none,showspaces=false,showstringspaces=false}
+}
+
+\begin{document}
+
+% --- CAPA / CABEÇALHO DO DOCUMENTO ---
+\begin{center}
+    {\large \textbf{LABORATÓRIO DE SISTEMAS EMBARCADOS \& COMUNICAÇÃO}}\\[2mm]
+    {\large DEPARTAMENTO DE ENGENHARIA ELETRÔNICA}\\[1mm]
+    {\normalsize SISTEMAS CIBERFÍSICOS E INTERNET DAS COISAS}\\[4mm]
+    \rule{\textwidth}{1.2pt}\\[3mm]
+    {\LARGE \textbf{\color{primary}GUIA TÉCNICO DE SISTEMAS EMBARCADOS \& IOT}}\\[2mm]
+    {\Large \textbf{Microcontroladores ESP32, Automação Residencial e Redes TCP/IP}}\\[2mm]
+    {\normalsize \textbf{Domínio:} IoT \& Redes de Comunicação \quad | \quad \textbf{Plataforma:} ESP32 (ESP-IDF / Arduino Core)}\\[1mm]
+    \rule{\textwidth}{1.2pt}\\[3mm]
+    \textbf{Autor:} João Victor Pariz\\[1mm]
+    \textit{Engenharia Eletrônica -- Outubro de 2026}
+\end{center}
+
+\vspace{1mm}
+
+\begin{infobox}{Visão Geral da Arquitetura do Sistema}
+Este projeto consolida a integração entre a teoria de redes de computadores e o desenvolvimento prático de sistemas ciberfísicos embarcados:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Fase 1 -- Programação com Sockets em C:} Desenvolvimento de arquiteturas cliente-servidor orientadas a conexão (TCP) e sem conexão (UDP) utilizando a API de Sockets BSD / Winsock2.
+    \item \textbf{Fase 2 -- Internet das Coisas e Laboratório ESP32:} Desenvolvimento prático de firmware em C++ para microcontroladores ESP32 integrando automação de um \textbf{módulo de 4 relés para controle de cargas em corrente alternada} via Wi-Fi (Servidor Web HTTP com SoftAP de contingência) e Bluetooth Classic (SPP).
+\end{enumerate}
+Este manual consolida o roteiro técnico passo a passo para a bancada: instalação de ferramentas, pinagem segura, circuito elétrico, códigos-fonte e resolução de falhas.
+\end{infobox}
+
+\section{O Kit de Automação Residencial Eletrogate}
+
+O ecossistema experimental baseia-se na plataforma ESP32 integrada a módulos de controle de potência e instrumentação de ambiente. Os principais recursos utilizados incluem:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Kit de Automação Eletrogate:} \url{https://www.eletrogate.com/kit-arduino}
+    \item \textbf{Apostila Oficial de Automação:} \href{https://conteudo.eletrogate.com/apostila-automacao-residencial}{Apostila Eletrogate (Automação Residencial)}
+    \item \textbf{Componentes Chave do Laboratório:}
+    \begin{enumerate}
+        \item Placa de desenvolvimento \textbf{ESP32 DevKit V1 (30 pinos)}.
+        \item Módulo de \textbf{4 relés eletromecânicos} de 5V com acionamento óptico por optoacoplador.
+        \item Sensor de temperatura e umidade \textbf{DHT11}.
+        \item Lâmpadas / cargas piloto para simulação dos 4 cômodos residenciais (Sala, Quarto, Cozinha, Varanda).
+        \item Cabos de conexão (Jumpers macho-macho e macho-fêmea).
+    \end{enumerate}
+\end{itemize}
+
+\section{Instalação e Configuração do Ambiente de Software}
+
+A preparação do ambiente de desenvolvimento deve garantir suporte completo ao ecossistema ESP-IDF / Arduino-ESP32 Core. São necessários os seguintes passos:
+
+\subsection{Passo 1: Pré-requisito Obrigatório -- Instalação do Python}
+\begin{warnbox}{Nota Técnica sobre Dependências do Toolchain Python}
+Antes de configurar a placa na IDE, é indispensável que o \textbf{Python 3.x} esteja instalado no Windows com a opção \textbf{``Add Python to PATH''} marcada. Durante o processo de compilação e gravação do firmware na memória flash do ESP32, a Arduino IDE invoca o script em Python \texttt{esptool.py}.
+\end{warnbox}
+
+\subsection{Passo 2: Instalação do Driver USB-Serial}
+O ESP32 conecta-se ao computador através de um chip conversor serial. Identifique o chip da sua placa:
+\begin{itemize}
+    \item \textbf{Silicon Labs CP2102/CP2104:} Caso o Windows não reconheça automaticamente, instale o driver oficial \textit{CP210x Universal Windows Driver} (disponível no site da Silicon Labs).
+    \item \textbf{WCH CH340:} Presente em placas alternativas, requer o instalador \textit{CH341SER.EXE}.
+\end{itemize}
+\textit{Confirmação:} Abra o \textbf{Gerenciador de Dispositivos} $\rightarrow$ expanda \textbf{Portas (COM e LPT)}. Deve constar uma porta ativa (ex.: \texttt{Silicon Labs CP210x USB to UART Bridge (COM3)}).
+
+\subsection{Passo 3: Adição do Repositório da Placa no Arduino IDE}
+\begin{enumerate}
+    \item Abra o \textbf{Arduino IDE} (versão 2.x recomendada).
+    \item Acesse \textbf{Arquivo} $\rightarrow$ \textbf{Preferências} (atalho \texttt{Ctrl + ,}).
+    \item No campo \textbf{URLs do Gerenciador de Placas Adicionais}, cole exatamente a URL oficial da Espressif:
+    \begin{tcolorbox}[colback=codebg,colframe=darkslate,boxrule=0.8pt,top=1.5mm,bottom=1.5mm]
+    \footnotesize\color{keywordblue}\url{https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json}
+    \end{tcolorbox}
+    \item Clique em \textbf{OK}.
+    \item No menu lateral, acesse o \textbf{Boards Manager} (ícone de placa), digite \texttt{esp32} (desenvolvido por \textit{Espressif Systems}) e clique em \textbf{Instalar}.
+\end{enumerate}
+
+\begin{infobox}{Tutoriais Complementares Indicados pelo Coordenação da Disciplina}
+Nos slides de aula da UD5, o Coordenação da Disciplina recomenda os seguintes tutoriais para apoio à instalação:
+\begin{itemize}[leftmargin=*]
+    \item Guia Fernando K: \url{https://www.fernandok.com/2018/09/instalando-esp32-no-arduino-ide.html}
+    \item Guia CapSistema: \url{https://capsistema.com.br/index.php/2021/02/26/programacao-da-placa-esp32-com-arduino-ide/}
+\end{itemize}
+\end{infobox}
+
+\subsection{Passo 4: Seleção da Placa e Parâmetros de Upload}
+No menu superior \textbf{Ferramentas} (\textit{Tools}):
+\begin{itemize}
+    \item \textbf{Placa (Board):} Selecione \texttt{DOIT ESP32 DEVKIT V1} (ou \texttt{ESP32 Dev Module}).
+    \item \textbf{Porta (Port):} Selecione a porta COM identificada no Gerenciador de Dispositivos.
+    \item \textbf{Upload Speed:} \texttt{115200} bps (ou \texttt{921600} bps para gravação acelerada).
+    \item \textbf{Flash Frequency:} \texttt{80MHz}.
+    \item \textbf{Core Debug Level:} \texttt{None}.
+\end{itemize}
+
+\section{Arquitetura de Hardware e Pinagem Segura}
+
+\subsection{Pinout e Restrições Físicas do ESP32 (30 pinos)}
+O ESP32 DevKit V1 de 30 pinos possui limitações elétricas fundamentais que devem ser respeitadas para evitar queima da placa ou travamento de inicialização:
+
+\begin{warnbox}{Pinos Proibidos para Relés: Strapping Pins e Input-Only}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Pinos de Strapping (GPIO 0, 2, 12 e 15):} São verificados pelo circuito interno do SoC durante o instante de ligamento/reset para definir a fonte de clock e o modo de boot (execução da flash ou modo download). Se um módulo relé estiver conectado a esses pinos, ele forçará o pino em nível alto ou baixo no boot, travando a inicialização do ESP32! \textbf{Nunca conecte os relés nos GPIOs 0, 2, 12 e 15.}
+    \item \textbf{Pinos Somente Entrada (GPIO 34, 35, 36/VP e 39/VN):} Não possuem transistores internos de driver de saída nem resistores de pull-up/pull-down. Funcionam apenas como entradas analógicas ou digitais.
+    \item \textbf{Pinos da Flash SPI (GPIO 6 a 11):} São conectados internamente ao chip de memória flash SPI. Qualquer conexão externa causará travamento imediato do microcontrolador.
+\end{enumerate}
+\end{warnbox}
+
+\subsection{A Lógica Active-LOW do Módulo Relé}
+Os módulos de relé da Eletrogate possuem entradas acopladas opticamente (fototransistor interno com LED infravermelho). O circuito é configurado em \textbf{Lógica Ativa em Nível Baixo (Active-LOW)}:
+\begin{itemize}
+    \item \texttt{digitalWrite(PINO, LOW)} $\rightarrow$ O circuito drena corrente pelo catodo do optoacoplador, polarizando o transistor de driver. O relé \textbf{atraca} (o contato COM une-se ao contato NA), \textbf{acendendo a lâmpada}.
+    \item \texttt{digitalWrite(PINO, HIGH)} $\rightarrow$ O LED do optoacoplador apaga, o transistor corta e a mola do relé retorna o contato para NF, \textbf{apagando a lâmpada}.
+\end{itemize}
+
+\begin{warnbox}{Boas Práticas de Programação no Setup}
+Para evitar que as lâmpadas pisquem ou todos os 4 relés atraquem no exato segundo em que o ESP32 é energizado, a inicialização no \texttt{setup()} deve ser feita obrigatoriamente nesta ordem:
+\begin{lstlisting}[language=C++]
+digitalWrite(PINO_RELE, HIGH); // Garante estado DESLIGADO antes de habilitar
+pinMode(PINO_RELE, OUTPUT);     // Configura pino como saida
+digitalWrite(PINO_RELE, HIGH); // Reforco de seguranca
+\end{lstlisting}
+\end{warnbox}
+
+\subsection{Tabela de Conexão Física de Bancada}
+
+\begin{table}[H]
+\centering
+\caption{Mapeamento Seguro de Conexões entre ESP32 e Módulo de 4 Relés}
+\label{tab:pinagem_reles}
+\begin{tabularx}{\textwidth}{lllX}
+\toprule
+\textbf{Pino no Relé} & \textbf{Pino no ESP32} & \textbf{Função no Sistema} & \textbf{Justificativa Técnica} \\
+\midrule
+\textbf{VCC} & \texttt{VIN} (5V) & Alimentação das bobinas & Relés exigem 5V para atracamento confiável. \\
+\textbf{GND} & \texttt{GND} & Terra comum do circuito & Referência de tensão unificada. \\
+\textbf{IN1} & \texttt{GPIO 25} & Lâmpada 1 (Sala) & GPIO segura, saída digital nativa. \\
+\textbf{IN2} & \texttt{GPIO 26} & Lâmpada 2 (Quarto) & GPIO segura, saída digital nativa. \\
+\textbf{IN3} & \texttt{GPIO 32} & Lâmpada 3 (Cozinha) & GPIO segura, sem interferência no boot. \\
+\textbf{IN4} & \texttt{GPIO 33} & Lâmpada 4 (Varanda) & GPIO segura, sem interferência no boot. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Diagrama de Conexões em Bloco (Bancada de Laboratório)}
+
+\begin{circuitbox}{Esquemático de Ligações Físicas e Cargas de Potência}
++-----------------------+                    +------------------------------------+
+|   ESP32 DevKit V1     |                    |       MODULO DE 4 RELES (5V)       |
+|                       |                    |                                    |
+|             VIN (5V)  |------------------->| VCC                                |
+|             GND       |------------------->| GND                                |
+|             GPIO 25   |------------------->| IN1 ----[ RELE 1 - SALA ]          |
+|             GPIO 26   |------------------->| IN2 ----[ RELE 2 - QUARTO ]        |
+|             GPIO 32   |------------------->| IN3 ----[ RELE 3 - COZINHA ]       |
+|             GPIO 33   |------------------->| IN4 ----[ RELE 4 - VARANDA ]       |
++-----------------------+                    +------------------------------------+
+                                                         |    |    |    |
+                                      Bornes de Saida:  [NA] [NA] [NA] [NA]
+                                                         |    |    |    |
+                                                        (L1) (L2) (L3) (L4) Lampadas
+                                                         |    |    |    |
+                  Rede AC (ou Fonte 12V): Fase --------> COM  COM  COM  COM
+                                          Neutro ------> Retorno de todas as lampadas
+\end{circuitbox}
+
+\section{Roteiro Prático 1: Teste de Bancada e Acionamento Sequencial}
+
+O objetivo deste primeiro teste é verificar a integridade eletromecânica dos 4 relés, os LEDs indicadores do módulo e a resposta de depuração no Monitor Serial da Arduino IDE.
+
+\begin{lstlisting}[language=C++, caption={Código de Teste Sequencial dos 4 Relés (\texttt{01\_teste\_reles.ino})}]
+/*
+ * Embedded Network Lab & ESP32 IoT Automation
+ * Roteiro 1: Teste Sequencial do Modulo de 4 Reles
+ * Plataforma: ESP32 DevKit V1
+ */
+
+#define RELAY_1 25
+#define RELAY_2 26
+#define RELAY_3 32
+#define RELAY_4 33
+
+#define RELAY_ON  LOW
+#define RELAY_OFF HIGH
+
+const int relayPins[4] = {RELAY_1, RELAY_2, RELAY_3, RELAY_4};
+const char* lampNames[4] = {"Sala", "Quarto", "Cozinha", "Varanda"};
+
+void setup() {
+    Serial.begin(115200);
+    delay(1000);
+    Serial.println("\n=== IME - Redes I: Teste Inicial do Modulo de 4 Reles ===");
+
+    for (int i = 0; i < 4; i++) {
+        digitalWrite(relayPins[i], RELAY_OFF);
+        pinMode(relayPins[i], OUTPUT);
+        digitalWrite(relayPins[i], RELAY_OFF);
+    }
+    Serial.println("[OK] Reles inicializados em estado DESLIGADO (HIGH).");
+}
+
+void loop() {
+    Serial.println("\n--- Iniciando Ciclo de Acionamento Sequencial ---");
+    for (int i = 0; i < 4; i++) {
+        Serial.printf("[ACIONANDO] Lampada %d (%s) no GPIO %d...\n", i+1, lampNames[i], relayPins[i]);
+        digitalWrite(relayPins[i], RELAY_ON);
+        delay(1500);
+        
+        Serial.printf("[DESLIGANDO] Lampada %d (%s)...\n", i+1, lampNames[i]);
+        digitalWrite(relayPins[i], RELAY_OFF);
+        delay(500);
+    }
+
+    Serial.println("[TESTE COLETIVO] Acionando todas as 4 lampadas...");
+    for (int i = 0; i < 4; i++) digitalWrite(relayPins[i], RELAY_ON);
+    delay(2000);
+
+    Serial.println("[TESTE COLETIVO] Desligando todas as 4 lampadas...");
+    for (int i = 0; i < 4; i++) digitalWrite(relayPins[i], RELAY_OFF);
+    delay(3000);
+}
+\end{lstlisting}
+
+\section{Roteiro Prático 2: Servidor Web HTTP Wi-Fi (Dual Mode)}
+
+No contexto de Redes de Computadores, este experimento demonstra a implementação de um servidor de aplicação na camada de topo (HTTP/TCP na porta 80) sobre uma pilha TCP/IP completa no ESP32.
+
+\subsection{Topologia de Rede Resiliente: Modo Dual (STA + SoftAP)}
+Para garantir alta disponibilidade operacional e operação em campo sem roteador:
+\begin{enumerate}
+    \item \textbf{Modo Station (STA):} O firmware tenta conectar-se à rede Wi-Fi local pré-configurada (\texttt{SUA\_REDE\_WIFI}) ou ao roteador móvel do operador.
+    \item \textbf{Fallback para Ponto de Acesso Próprio (SoftAP):} Caso a rede não esteja disponível após 15 tentativas, o ESP32 cria sua própria rede Wi-Fi local (\texttt{ESP32-IoT-Server}, senha \texttt{senha\_ponto\_acesso}). Basta conectar o celular nessa rede e acessar no navegador o endereço IP padrão \textbf{\texttt{http://192.168.4.1}}.
+\end{enumerate}
+
+\begin{lstlisting}[language=C++, caption={Trecho Principal do Servidor Web HTTP (\texttt{02\_webserver\_4\_lampadas.ino})}]
+#include <WiFi.h>
+
+// Parametros de conexao da rede local Wi-Fi
+const char* sta_ssid     = "SUA_REDE_WIFI"; 
+const char* sta_password = "";
+
+// Ponto de Acesso Proprio para contingencia
+const char* ap_ssid      = "ESP32-IoT-Server";
+const char* ap_password  = "senha_ponto_acesso";
+
+#define RELAY_ON  LOW
+#define RELAY_OFF HIGH
+
+const int relayPins[4] = {25, 26, 32, 33};
+const char* lampNames[4] = {"Sala", "Quarto", "Cozinha", "Varanda"};
+bool relayStates[4] = {false, false, false, false};
+
+WiFiServer server(80);
+
+void setRelay(int idx, bool on) {
+    if (idx >= 0 && idx < 4) {
+        relayStates[idx] = on;
+        digitalWrite(relayPins[idx], on ? RELAY_ON : RELAY_OFF);
+    }
+}
+
+void sendHtmlResponse(WiFiClient& client) {
+    client.println("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: close\r\n");
+    client.println("<!DOCTYPE html><html><head><meta charset='UTF-8'>");
+    client.println("<meta name='viewport' content='width=device-width, initial-scale=1.0'>");
+    client.println("<style>body{font-family:sans-serif;background:#0f172a;color:#f8fafc;padding:20px;text-align:center;}");
+    client.println(".card{background:#1e293b;padding:15px;margin:10px auto;max-width:380px;border-radius:10px;border:1px solid #334155;}");
+    client.println(".btn{display:inline-block;padding:10px 24px;border-radius:6px;font-weight:bold;text-decoration:none;margin:4px;}");
+    client.println(".btn-on{background:#0284c7;color:#fff;} .btn-off{background:#475569;color:#cbd5e1;}");
+    client.println(".on{color:#4ade80;} .off{color:#f87171;}</style></head><body>");
+    client.println("<h2>ESP32 IoT Automation Hub</h2><p>Controle de Iluminacao Residencial & Automacao Industrial</p>");
+
+    for (int i = 0; i < 4; i++) {
+        client.printf("<div class='card'><h3>Lampada %d - %s</h3>", i+1, lampNames[i]);
+        if (relayStates[i]) {
+            client.printf("<p class='on'>ESTADO: ACESA</p><a class='btn btn-off' href='/lamp%d/off'>Desligar</a>", i+1);
+        } else {
+            client.printf("<p class='off'>ESTADO: APAGADA</p><a class='btn btn-on' href='/lamp%d/on'>Ligar</a>", i+1);
+        }
+        client.println("</div>");
+    }
+    client.println("<br><a class='btn' style='background:#22c55e;' href='/all/on'>Ligar Todas</a> ");
+    client.println("<a class='btn' style='background:#ef4444;' href='/all/off'>Desligar Todas</a>");
+    client.println("</body></html>");
+}
+
+void loop() {
+    WiFiClient client = server.available();
+    if (!client) return;
+
+    String currentLine = "";
+    String requestHeader = "";
+    unsigned long timeout = millis() + 2000;
+
+    while (client.connected() && millis() < timeout) {
+        if (client.available()) {
+            char c = client.read();
+            requestHeader += c;
+            if (c == '\n') {
+                if (currentLine.length() == 0) {
+                    if (requestHeader.indexOf("GET /lamp1/on") >= 0) setRelay(0, true);
+                    else if (requestHeader.indexOf("GET /lamp1/off") >= 0) setRelay(0, false);
+                    else if (requestHeader.indexOf("GET /lamp2/on") >= 0) setRelay(1, true);
+                    else if (requestHeader.indexOf("GET /lamp2/off") >= 0) setRelay(1, false);
+                    else if (requestHeader.indexOf("GET /lamp3/on") >= 0) setRelay(2, true);
+                    else if (requestHeader.indexOf("GET /lamp3/off") >= 0) setRelay(2, false);
+                    else if (requestHeader.indexOf("GET /lamp4/on") >= 0) setRelay(3, true);
+                    else if (requestHeader.indexOf("GET /lamp4/off") >= 0) setRelay(3, false);
+                    else if (requestHeader.indexOf("GET /all/on") >= 0) { for(int i=0;i<4;i++) setRelay(i,true); }
+                    else if (requestHeader.indexOf("GET /all/off") >= 0) { for(int i=0;i<4;i++) setRelay(i,false); }
+
+                    sendHtmlResponse(client);
+                    break;
+                } else currentLine = "";
+            } else if (c != '\r') currentLine += c;
+        }
+    }
+    client.stop();
+}
+\end{lstlisting}
+
+\section{Roteiro Prático 3: Controle e Telemetria via Bluetooth Classic}
+
+Para controle local sem dependência de infraestrutura Wi-Fi, implementamos a comunicação sem fio via perfil serial Bluetooth Classic (SPP -- \textit{Serial Port Profile}).
+
+\subsection{Operação com o Aplicativo no Smartphone}
+Procedimento para conexão e operação via smartphone:
+\begin{enumerate}
+    \item Instale no smartphone o aplicativo gratuito \textbf{Serial Bluetooth Terminal} (desenvolvido por Kai Morich).
+    \item Ligue o Bluetooth do celular e faça o pareamento com o dispositivo \texttt{ESP32-IoT-Server}.
+    \item No aplicativo, abra o menu lateral $\rightarrow$ selecione \textbf{Devices} $\rightarrow$ toque em \texttt{ESP32-IoT-Server} e toque no ícone de conexão.
+    \item Envie os comandos textuais em maiúsculo definidos na Tabela \ref{tab:comandos_bt}.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\caption{Protocolo de Comandos Textuais via Bluetooth Serial}
+\label{tab:comandos_bt}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Comando (ASCII)} & \textbf{Efeito Eletromecânico e Resposta do ESP32} \\
+\midrule
+\texttt{L1 ON} / \texttt{L1 OFF} & Aciona ou desliga a Lâmpada 1 (Sala -- GPIO 25) \\
+\texttt{L2 ON} / \texttt{L2 OFF} & Aciona ou desliga a Lâmpada 2 (Quarto -- GPIO 26) \\
+\texttt{L3 ON} / \texttt{L3 OFF} & Aciona ou desliga a Lâmpada 3 (Cozinha -- GPIO 32) \\
+\texttt{L4 ON} / \texttt{L4 OFF} & Aciona ou desliga a Lâmpada 4 (Varanda -- GPIO 33) \\
+\texttt{ALL ON} / \texttt{ALL OFF} & Aciona ou desliga simultaneamente as 4 lâmpadas \\
+\texttt{STATUS} & Retorna no terminal o estado detalhado de cada cômodo \\
+\texttt{HELP} & Imprime na tela do smartphone a lista completa de comandos válidos \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Guia de Troubleshooting: Resolução de Falhas em Bancada}
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Falha na Gravação da Placa:}\\
+    {\footnotesize\texttt{A fatal error occurred: Failed to connect to ESP32: Timed out waiting for packet header}}
+    \begin{itemize}
+        \item \textit{Diagnóstico:} O circuito de auto-reset do módulo não conseguiu aterrar o pino GPIO 0 no instante da sincronização serial do \texttt{esptool.py}.
+        \item \textit{Solução Imediata:} No instante em que o console da IDE exibir os pontos de conexão (\texttt{Connecting........\_\_\_\_}), mantenha pressionado o botão físico \textbf{BOOT} da placa até aparecer a mensagem \texttt{Writing at 0x00010000... (5\%)}. Em seguida, solte o botão.
+        \item \textit{Solução por Hardware:} Caso o problema persista, conecte um capacitor eletrolítico de $10\,\mu\text{F}$ entre os pinos \textbf{EN} e \textbf{GND}.
+    \end{itemize}
+
+    \item \textbf{Reinicialização Espontânea do ESP32 (\textit{Brownout detector was triggered}):}
+    \begin{itemize}
+        \item \textit{Diagnóstico:} Cada bobina de relé consome cerca de $70\,\text{mA}$. Ao acionar os 4 relés somados à corrente de pico do transmissor Wi-Fi ($>250\,\text{mA}$), a corrente solicitada supera o limite da porta USB do computador ou a resistência interna de cabos longos, fazendo a linha de 5V cair abaixo de 4.5V.
+        \item \textit{Solução:} Alimentar o borne VCC dos relés com uma fonte externa de 5V (2A), mantendo o fio de terra (\textbf{GND}) unificado com o GND do ESP32.
+    \end{itemize}
+
+    \item \textbf{Relés acionando de forma invertida ou ligando no boot:}
+    \begin{itemize}
+        \item \textit{Diagnóstico:} Módulo em lógica \textit{Active-LOW}. A chamada de \texttt{pinMode(pino, OUTPUT)} por padrão assume nível zero, atracando os relés.
+        \item \textit{Solução:} Sempre chamar \texttt{digitalWrite(pino, HIGH)} \textbf{antes} de chamar \texttt{pinMode(pino, OUTPUT)}.
+    \end{itemize}
+\end{enumerate}
+
+\section{Estrutura e Critérios do Relatório Técnico de Engenharia}
+
+Para fins de documentação formal de projetos de engenharia eletrônica e computação, a especificação técnica deve estruturar-se rigorosamente com os seguintes itens:
+
+\begin{enumerate}
+    \item \textbf{Capa e Identificação Técnica:} Título formal do projeto, identificação institucional, autores e objetivos centrais do experimento.
+    \item \textbf{Introdução Teórica e Objetivos:} Fundamentos de sistemas embarcados IoT, microcontrolador ESP32, modelo cliente-servidor HTTP e protocolo Bluetooth SPP.
+    \item \textbf{Diagrama de Blocos e Topologia de Rede:} Esquema ilustrando a comunicação do celular com o ESP32 via Ponto de Acesso e o isolamento galvânico perante a carga de potência.
+    \item \textbf{Esquemático Elétrico de Conexões:} Tabela e diagrama de ligação dos pinos, demonstrando a proteção dos pinos de \textit{strapping}.
+    \item \textbf{Código-Fonte Comentado:} Apresentação limpa dos arquivos \texttt{.ino} desenvolvidos e explicados bloco a bloco.
+    \item \textbf{Resultados Experimentais:} Capturas de tela da interface Web no smartphone, prints do console Serial e fotos da montagem física na bancada de laboratório.
+    \item \textbf{Conclusões e Lições Aprendidas:} Análise das dificuldades encontradas (lógica invertida, dimensionamento de corrente, interferências de rede) e propostas de expansão (ex.: integração com protocolo MQTT e dashboards em nuvem).
+\end{enumerate}
+
+\vfill
+\begin{center}
+    \textit{Documento técnico de engenharia de redes e sistemas embarcados. Códigos-fonte completos disponíveis na pasta \texttt{src/} e \texttt{c\_sockets/} deste repositório.}
+\end{center}
+
+\end{document}
