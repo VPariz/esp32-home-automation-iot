@@ -1,0 +1,36 @@
+name: ESP32 Firmware CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  compile:
+    name: Verify ESP32 Firmware Compilation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          sudo mv bin/arduino-cli /usr/local/bin/
+
+      - name: Configure ESP32 Core
+        run: |
+          arduino-cli config init
+          arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+
+      - name: Compile Relay Safety Sketch
+        run: |
+          arduino-cli compile --fqbn esp32:esp32:esp32doit-devkit-v1 src/01_teste_reles/01_teste_reles.ino
+
+      - name: Compile Webserver HTTP Sketch
+        run: |
+          arduino-cli compile --fqbn esp32:esp32:esp32doit-devkit-v1 src/02_webserver_4_lampadas/02_webserver_4_lampadas.ino

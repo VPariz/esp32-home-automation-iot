@@ -1,5 +1,6 @@
 # ESP32 Smart Home Automation & Embedded Networking
 
+[![Firmware CI](https://github.com/VPariz/esp32-home-automation-iot/actions/workflows/ci.yml/badge.svg)](https://github.com/VPariz/esp32-home-automation-iot/actions/workflows/ci.yml)
 [![MCU](https://img.shields.io/badge/MCU-ESP32%20DevKit%20V1-E7352C?style=flat-square&logo=espressif&logoColor=white)](https://espressif.com/)
 [![Framework](https://img.shields.io/badge/Framework-Arduino%20Core%20%2F%20ESP--IDF-00979D?style=flat-square&logo=arduino&logoColor=white)](https://github.com/espressif/arduino-esp32)
 [![Protocol](https://img.shields.io/badge/Protocols-HTTP%20%7C%20Wi--Fi%20%7C%20Bluetooth%20SPP-00599C?style=flat-square)](https://en.wikipedia.org/wiki/Internet_protocol_suite)
